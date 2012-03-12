@@ -1,0 +1,20 @@
+{
+  "author": "Owen Winkler (http://owenw.com)",
+  "name": "barchat2",
+  "description": "A real-time chat system.",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ringmaster/barchat2.git"
+  },
+  "main": "barchat.js",
+  "engines": {
+    "node": "~v0.4.10"
+  },
+  "dependencies": {
+    "mongoose": "2.5.10",
+    "express": "2.5.8",
+    "jqtpl": "1.0.9"
+  },
+  "devDependencies": {}
+}
