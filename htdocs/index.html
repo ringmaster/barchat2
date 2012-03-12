@@ -15,7 +15,10 @@ body {
 header {
 	background-color: #e0e0e0;
 	height: 66px;
-	display: none;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	width: 100%;
 }
 header h1 {
 	color: white;
@@ -28,8 +31,11 @@ header h1 {
 #statusbar {
 	width: 79px;
 	border-right: 1px solid #eee;
-	float: left;
+	position: fixed;
 	height: 100%;
+	top: 0px;
+	left: 0px;
+	margin-top: 66px;
 }
 #statusbar label {
 	font-size: 10px;
@@ -47,13 +53,17 @@ header h1 {
 	width: 30px;
 	height: 30px;
 	border: 1px solid #eee;
-	margin-right: 5px;
+	margin: 0px 5px 0px 0px;
 	display: block;
 	float: left;
 }
 #statusbar img {
 	width: 32px;
 	height: 32px;
+}
+#rooms {
+	padding-bottom: 80px;
+	margin: 66px 0px 0px 80px;
 }
 #controls {
 	position: fixed;
@@ -65,6 +75,17 @@ header h1 {
 }
 #controls #roomtabs li {
 	display: inline;
+}
+.room {
+	display: none;
+}
+.room.active {
+	display: block;
+}
+
+.room p {
+	font-size: 15px;
+	margin-top: 30px;
 }
 	</style>
 
@@ -84,6 +105,13 @@ header h1 {
 				<img src="avatar.png">
 			</li>
 		</ul>
+		<label>Services</label>
+		<ul>
+			<li class="user">
+				<span class="status"></span>
+				<img src="github.png">
+			</li>
+		</ul>
 		<label>Offline</label>
 		<ul>
 			<li class="user">
@@ -96,19 +124,46 @@ header h1 {
 
 	<div id="stage">
 		<div id="rooms">
-			<div id="room1" class="room">
+			<div id="room1" class="room active">
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tincidunt dolor iaculis sem pharetra vel congue nibh facilisis. Maecenas tempor arcu vel nisi sagittis placerat. Phasellus luctus magna ac nibh volutpat tristique. Aenean pulvinar iaculis est. Nullam et sapien massa. In lobortis lobortis quam, id auctor turpis bibendum id. Nullam consequat nunc at est placerat pharetra. Phasellus a sollicitudin turpis. Nam rhoncus viverra purus, ut dapibus neque ultrices a. Ut non magna vitae est dapibus porta sed et libero. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Cras cursus fringilla libero, eu interdum augue aliquam a. Sed hendrerit, magna in placerat mattis, metus massa dictum elit, ut semper mi libero id est. Cras lectus nisl, molestie ut dictum porta, lacinia nec justo. Praesent placerat, justo vitae tincidunt posuere, justo magna dignissim nibh, a scelerisque ipsum ante eu turpis. Cras dapibus erat quis sem pharetra scelerisque. Sed volutpat volutpat turpis, vitae pretium velit dictum tempor.
+
+<p>Aliquam erat volutpat. Phasellus consectetur bibendum enim, nec mollis orci volutpat aliquam. Maecenas euismod sollicitudin mauris, vitae interdum purus tincidunt et. Nulla quam magna, dapibus vitae pulvinar et, consectetur id dui. Praesent sed justo ac ligula dignissim mattis et a mi. Proin mollis nisi ullamcorper tellus semper vestibulum. Suspendisse tincidunt feugiat euismod. Praesent eget libero nec augue ornare ornare. Integer cursus ante eget sem fermentum varius. Aenean id neque eget felis tempus sagittis eget et dui. Nullam id sodales mauris. Fusce luctus aliquam erat, at egestas lectus suscipit id. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Pellentesque feugiat tempor vehicula. Nullam ipsum turpis, dignissim a interdum vitae, feugiat eu dui.
+
+<p>Vivamus sed leo purus. Nam turpis eros, dictum id fermentum vel, placerat in libero. Donec tincidunt rhoncus neque ut fringilla. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec commodo, urna at hendrerit pellentesque, arcu felis bibendum nibh, quis cursus nisl eros id dolor. Proin convallis, massa vel tincidunt ultricies, ipsum odio sagittis felis, vel tincidunt sapien tellus id lacus. In velit nisl, pulvinar in vulputate sit amet, volutpat et neque. Nullam cursus, diam ac dictum vehicula, quam felis elementum ante, et rutrum arcu ante vitae ipsum. Quisque consequat neque nulla. Ut lectus lorem, adipiscing id ultricies eu, convallis at lorem. Ut mollis sapien sed felis molestie at fringilla turpis porta. Donec rutrum odio lorem, tincidunt iaculis risus. Phasellus id velit ac justo accumsan placerat. Mauris vitae ante in felis vulputate pellentesque vitae tristique ipsum.
+
+<p>Aliquam elit dui, congue quis condimentum eu, malesuada a turpis. Fusce eleifend tellus consectetur nibh euismod semper. Vestibulum malesuada neque eu leo faucibus mollis quis id felis. Cras et tellus sapien. Proin in orci non sapien accumsan porttitor. Duis vel nulla nibh. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus nisi felis, dictum vitae fringilla eu, cursus in sapien. Integer vulputate, risus eu porta sodales, risus nunc ultricies est, ut congue eros nisl a nibh. Aliquam lobortis, velit at imperdiet dictum, ipsum purus semper massa, non blandit nisl felis ac velit. Aenean at tellus vel quam sodales fermentum vel ac orci. Duis congue aliquam erat, id convallis lorem tempor a. Etiam interdum consequat arcu, ut sagittis arcu fermentum in.
+
+<p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Mauris facilisis magna eu lectus faucibus a rutrum quam faucibus. Integer pretium ante sagittis eros consectetur viverra. Donec ac lacus ut lorem convallis rhoncus. Nulla volutpat fermentum lobortis. Ut euismod aliquam sapien, in eleifend dolor pellentesque vel. Nunc molestie, dolor et mattis congue, libero leo fermentum nibh, non fringilla velit turpis et nibh. Fusce leo eros, pharetra non faucibus ac, elementum consequat sapien. Ut quam nisl, ornare sit amet convallis quis, ornare ut diam. Duis sagittis mollis nisi, consequat porta magna egestas vel. Proin eu sollicitudin dolor. Sed lacinia est ac erat pulvinar ut eleifend nibh adipiscing. Nulla rutrum lectus vel dolor fringilla suscipit feugiat et tellus. Praesent pulvinar eleifend diam, sed vestibulum libero ornare malesuada. Integer vitae sapien viverra ligula mollis ullamcorper in nec eros.
 			</div>
 			<div id="room2" class="room">
+<p>Vivamus sed leo purus. Nam turpis eros, dictum id fermentum vel, placerat in libero. Donec tincidunt rhoncus neque ut fringilla. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec commodo, urna at hendrerit pellentesque, arcu felis bibendum nibh, quis cursus nisl eros id dolor. Proin convallis, massa vel tincidunt ultricies, ipsum odio sagittis felis, vel tincidunt sapien tellus id lacus. In velit nisl, pulvinar in vulputate sit amet, volutpat et neque. Nullam cursus, diam ac dictum vehicula, quam felis elementum ante, et rutrum arcu ante vitae ipsum. Quisque consequat neque nulla. Ut lectus lorem, adipiscing id ultricies eu, convallis at lorem. Ut mollis sapien sed felis molestie at fringilla turpis porta. Donec rutrum odio lorem, tincidunt iaculis risus. Phasellus id velit ac justo accumsan placerat. Mauris vitae ante in felis vulputate pellentesque vitae tristique ipsum.
+
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tincidunt dolor iaculis sem pharetra vel congue nibh facilisis. Maecenas tempor arcu vel nisi sagittis placerat. Phasellus luctus magna ac nibh volutpat tristique. Aenean pulvinar iaculis est. Nullam et sapien massa. In lobortis lobortis quam, id auctor turpis bibendum id. Nullam consequat nunc at est placerat pharetra. Phasellus a sollicitudin turpis. Nam rhoncus viverra purus, ut dapibus neque ultrices a. Ut non magna vitae est dapibus porta sed et libero. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Cras cursus fringilla libero, eu interdum augue aliquam a. Sed hendrerit, magna in placerat mattis, metus massa dictum elit, ut semper mi libero id est. Cras lectus nisl, molestie ut dictum porta, lacinia nec justo. Praesent placerat, justo vitae tincidunt posuere, justo magna dignissim nibh, a scelerisque ipsum ante eu turpis. Cras dapibus erat quis sem pharetra scelerisque. Sed volutpat volutpat turpis, vitae pretium velit dictum tempor.
+
+<p>Aliquam erat volutpat. Phasellus consectetur bibendum enim, nec mollis orci volutpat aliquam. Maecenas euismod sollicitudin mauris, vitae interdum purus tincidunt et. Nulla quam magna, dapibus vitae pulvinar et, consectetur id dui. Praesent sed justo ac ligula dignissim mattis et a mi. Proin mollis nisi ullamcorper tellus semper vestibulum. Suspendisse tincidunt feugiat euismod. Praesent eget libero nec augue ornare ornare. Integer cursus ante eget sem fermentum varius. Aenean id neque eget felis tempus sagittis eget et dui. Nullam id sodales mauris. Fusce luctus aliquam erat, at egestas lectus suscipit id. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Pellentesque feugiat tempor vehicula. Nullam ipsum turpis, dignissim a interdum vitae, feugiat eu dui.
+
+<p>Aliquam elit dui, congue quis condimentum eu, malesuada a turpis. Fusce eleifend tellus consectetur nibh euismod semper. Vestibulum malesuada neque eu leo faucibus mollis quis id felis. Cras et tellus sapien. Proin in orci non sapien accumsan porttitor. Duis vel nulla nibh. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus nisi felis, dictum vitae fringilla eu, cursus in sapien. Integer vulputate, risus eu porta sodales, risus nunc ultricies est, ut congue eros nisl a nibh. Aliquam lobortis, velit at imperdiet dictum, ipsum purus semper massa, non blandit nisl felis ac velit. Aenean at tellus vel quam sodales fermentum vel ac orci. Duis congue aliquam erat, id convallis lorem tempor a. Etiam interdum consequat arcu, ut sagittis arcu fermentum in.
+
+<p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Mauris facilisis magna eu lectus faucibus a rutrum quam faucibus. Integer pretium ante sagittis eros consectetur viverra. Donec ac lacus ut lorem convallis rhoncus. Nulla volutpat fermentum lobortis. Ut euismod aliquam sapien, in eleifend dolor pellentesque vel. Nunc molestie, dolor et mattis congue, libero leo fermentum nibh, non fringilla velit turpis et nibh. Fusce leo eros, pharetra non faucibus ac, elementum consequat sapien. Ut quam nisl, ornare sit amet convallis quis, ornare ut diam. Duis sagittis mollis nisi, consequat porta magna egestas vel. Proin eu sollicitudin dolor. Sed lacinia est ac erat pulvinar ut eleifend nibh adipiscing. Nulla rutrum lectus vel dolor fringilla suscipit feugiat et tellus. Praesent pulvinar eleifend diam, sed vestibulum libero ornare malesuada. Integer vitae sapien viverra ligula mollis ullamcorper in nec eros.
 			</div>
 			<div id="room3" class="room">
+<p>Aliquam elit dui, congue quis condimentum eu, malesuada a turpis. Fusce eleifend tellus consectetur nibh euismod semper. Vestibulum malesuada neque eu leo faucibus mollis quis id felis. Cras et tellus sapien. Proin in orci non sapien accumsan porttitor. Duis vel nulla nibh. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus nisi felis, dictum vitae fringilla eu, cursus in sapien. Integer vulputate, risus eu porta sodales, risus nunc ultricies est, ut congue eros nisl a nibh. Aliquam lobortis, velit at imperdiet dictum, ipsum purus semper massa, non blandit nisl felis ac velit. Aenean at tellus vel quam sodales fermentum vel ac orci. Duis congue aliquam erat, id convallis lorem tempor a. Etiam interdum consequat arcu, ut sagittis arcu fermentum in.
+
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tincidunt dolor iaculis sem pharetra vel congue nibh facilisis. Maecenas tempor arcu vel nisi sagittis placerat. Phasellus luctus magna ac nibh volutpat tristique. Aenean pulvinar iaculis est. Nullam et sapien massa. In lobortis lobortis quam, id auctor turpis bibendum id. Nullam consequat nunc at est placerat pharetra. Phasellus a sollicitudin turpis. Nam rhoncus viverra purus, ut dapibus neque ultrices a. Ut non magna vitae est dapibus porta sed et libero. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Cras cursus fringilla libero, eu interdum augue aliquam a. Sed hendrerit, magna in placerat mattis, metus massa dictum elit, ut semper mi libero id est. Cras lectus nisl, molestie ut dictum porta, lacinia nec justo. Praesent placerat, justo vitae tincidunt posuere, justo magna dignissim nibh, a scelerisque ipsum ante eu turpis. Cras dapibus erat quis sem pharetra scelerisque. Sed volutpat volutpat turpis, vitae pretium velit dictum tempor.
+
+<p>Aliquam erat volutpat. Phasellus consectetur bibendum enim, nec mollis orci volutpat aliquam. Maecenas euismod sollicitudin mauris, vitae interdum purus tincidunt et. Nulla quam magna, dapibus vitae pulvinar et, consectetur id dui. Praesent sed justo ac ligula dignissim mattis et a mi. Proin mollis nisi ullamcorper tellus semper vestibulum. Suspendisse tincidunt feugiat euismod. Praesent eget libero nec augue ornare ornare. Integer cursus ante eget sem fermentum varius. Aenean id neque eget felis tempus sagittis eget et dui. Nullam id sodales mauris. Fusce luctus aliquam erat, at egestas lectus suscipit id. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Pellentesque feugiat tempor vehicula. Nullam ipsum turpis, dignissim a interdum vitae, feugiat eu dui.
+
+<p>Vivamus sed leo purus. Nam turpis eros, dictum id fermentum vel, placerat in libero. Donec tincidunt rhoncus neque ut fringilla. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec commodo, urna at hendrerit pellentesque, arcu felis bibendum nibh, quis cursus nisl eros id dolor. Proin convallis, massa vel tincidunt ultricies, ipsum odio sagittis felis, vel tincidunt sapien tellus id lacus. In velit nisl, pulvinar in vulputate sit amet, volutpat et neque. Nullam cursus, diam ac dictum vehicula, quam felis elementum ante, et rutrum arcu ante vitae ipsum. Quisque consequat neque nulla. Ut lectus lorem, adipiscing id ultricies eu, convallis at lorem. Ut mollis sapien sed felis molestie at fringilla turpis porta. Donec rutrum odio lorem, tincidunt iaculis risus. Phasellus id velit ac justo accumsan placerat. Mauris vitae ante in felis vulputate pellentesque vitae tristique ipsum.
+
+<p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Mauris facilisis magna eu lectus faucibus a rutrum quam faucibus. Integer pretium ante sagittis eros consectetur viverra. Donec ac lacus ut lorem convallis rhoncus. Nulla volutpat fermentum lobortis. Ut euismod aliquam sapien, in eleifend dolor pellentesque vel. Nunc molestie, dolor et mattis congue, libero leo fermentum nibh, non fringilla velit turpis et nibh. Fusce leo eros, pharetra non faucibus ac, elementum consequat sapien. Ut quam nisl, ornare sit amet convallis quis, ornare ut diam. Duis sagittis mollis nisi, consequat porta magna egestas vel. Proin eu sollicitudin dolor. Sed lacinia est ac erat pulvinar ut eleifend nibh adipiscing. Nulla rutrum lectus vel dolor fringilla suscipit feugiat et tellus. Praesent pulvinar eleifend diam, sed vestibulum libero ornare malesuada. Integer vitae sapien viverra ligula mollis ullamcorper in nec eros.
 			</div>
 		</div>
 
 		<div id="controls">
 			<ul id="roomtabs">
-				<li class="active"><a href="#">Room 1</a></li>
-				<li><a href="#">Room 2</a></li>
-				<li><a href="#">Room 3</a></li>
+				<li class="active"><a href="#room1">Room 1</a></li>
+				<li><a href="#room2">Room 2</a></li>
+				<li><a href="#room3">Room 3</a></li>
 			</ul>
 			<div id="entry">
 				<input type="text">
@@ -119,6 +174,17 @@ header h1 {
 </div>
 
 <footer></footer>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script type="text/javascript">
+$(function(){
+	$('#roomtabs a').click(function(){
+		$('.room').removeClass('active');
+		$($(this).attr('href')).addClass('active');
+		return false;
+	});
+});
+</script>
 
 </body>
 </html>
