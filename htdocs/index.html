@@ -1,0 +1,124 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>BarChat</title>
+	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.4.1/build/cssreset/cssreset-min.css" />
+	<style type="text/css">
+html {
+	height: 100%;
+}
+body {
+	margin: 0px;
+	font-family: arial;
+	height: 100%;
+}
+header {
+	background-color: #e0e0e0;
+	height: 66px;
+	display: none;
+}
+header h1 {
+	color: white;
+	padding: 10px;
+	font-size: 200%;
+}
+#wrap {
+	height: 100%;
+}
+#statusbar {
+	width: 79px;
+	border-right: 1px solid #eee;
+	float: left;
+	height: 100%;
+}
+#statusbar label {
+	font-size: 10px;
+	background: #666;
+	color: white;
+	display: block;
+	padding: 0px 0px 0px 10px;
+	margin: 15px 0px 0px;
+}
+#statusbar .user {
+	height: 32px;
+	margin: 5px 5px;
+}
+#statusbar .user .status {
+	width: 30px;
+	height: 30px;
+	border: 1px solid #eee;
+	margin-right: 5px;
+	display: block;
+	float: left;
+}
+#statusbar img {
+	width: 32px;
+	height: 32px;
+}
+#controls {
+	position: fixed;
+	margin-left: 79px;
+	bottom: 0px;
+	background-color: #EEE;
+	width: 100%;
+	padding: 5px;
+}
+#controls #roomtabs li {
+	display: inline;
+}
+	</style>
+
+</head>
+<body>
+
+<header>
+	<h1>BarChat</h1>
+</header>
+
+<div id="wrap">
+	<div id="statusbar">
+		<label>Online</label>
+		<ul>
+			<li class="user">
+				<span class="status"></span>
+				<img src="avatar.png">
+			</li>
+		</ul>
+		<label>Offline</label>
+		<ul>
+			<li class="user">
+				<span class="status"></span>
+				<img src="avatar.png">
+			</li>
+		</ul>
+
+	</div>
+
+	<div id="stage">
+		<div id="rooms">
+			<div id="room1" class="room">
+			</div>
+			<div id="room2" class="room">
+			</div>
+			<div id="room3" class="room">
+			</div>
+		</div>
+
+		<div id="controls">
+			<ul id="roomtabs">
+				<li class="active"><a href="#">Room 1</a></li>
+				<li><a href="#">Room 2</a></li>
+				<li><a href="#">Room 3</a></li>
+			</ul>
+			<div id="entry">
+				<input type="text">
+				<button>send</button>
+			</div>
+	</div>
+
+</div>
+
+<footer></footer>
+
+</body>
+</html>
