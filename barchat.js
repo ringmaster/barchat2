@@ -1,19 +1,29 @@
 var express = require('express')
   , routes = require('./routes')
-  , jqtpl = require("jqtpl")
   , mongoose = require("mongoose")
   , Schema = mongoose.Schema
   , crypto = require('crypto');
 
 var app = module.exports = express.createServer();
 
-// Configuration
-
+// App Configuration
 app.configure(function(){
 	app.set("view engine", "html");
-	app.register(".html", require("jqtpl").express);
+  app.set('view options', {layout: false});
+  // make a custom html template
+  app.register('.html', {
+    compile: function(str, options){
+      return function(locals){
+        return str;
+      };
+    }
+  });
   app.use(express.bodyParser());
   app.use(express.methodOverride());
+  app.use(express.errorHandler({
+    dumpExceptions:true, 
+    showStack:true
+  }));
   app.use(app.router);
   app.use(express.static(__dirname + '/htdocs'));
   app.enable("jsonp callback");
@@ -56,7 +66,10 @@ var Messages = mongoose.model('Messages', MessagesSchema);
 
 // Routes
 
-app.get('/', routes.index);
+//app.get('/', routes.index);
+app.get('/', function(req,res) {
+  res.render('index.html');
+});
 
 app.post("/api/v1.0/getUserToken", function(req, res) {
   Users.findOne({username: req.body.username, password: crypto.createHash('md5').update(req.body.password).digest("hex")}, function(err, doc){

@@ -112,25 +112,22 @@ header h1 {
 	<h1>BarChat</h1>
 </header>
 
-<script id="user_placard" type="text/html">
-	<li class="user_placard">
-		<span class="status"></span>
-		<img class="avatar" src="{{ avatar }}" title="{{ nickname }}">
-	</li>
+<script id="placard_group" type="text/html">
+	<div class="placards">
+		<label>{{name}}</label>
+		<ul>
+		{{#placards}}
+			<li class="user_placard">
+				<span class="status"></span>
+				<img class="avatar" src="{{avatar}}" title="{{nickname}}">
+			</li>
+		{{/placards}}
+		<ul>
+	</div>
 </script>
 
 <div id="wrap">
 	<div id="statusbar">
-		<label>Online</label>
-		<ul id="users_online">
-		</ul>
-		<label>Services</label>
-		<ul id="users_services">
-		</ul>
-		<label>Offline</label>
-		<ul id="users_offline">
-		</ul>
-
 	</div>
 
 	<div id="stage">
@@ -190,9 +187,9 @@ $(function(){
 	});
 
 	// Initialize user sample content
-	$('#users_online').append(ich.user_placard({avatar: 'avatar.png', nickname: 'Bill Jennings'}));
-	$('#users_services').append(ich.user_placard({avatar: 'github.png', nickname: 'GitHub'}));
-	$('#users_offline').append(ich.user_placard({avatar: 'avatar2.png', nickname: 'Sue Heron'}));
+	$('#statusbar').append(ich.placard_group({name: 'online', placards: [{avatar: 'avatar.png', nickname: 'Bill Jennings'}]}));
+	$('#statusbar').append(ich.placard_group({name: 'services', placards: [{avatar: 'github.png', nickname: 'GitHub'}]}));
+	$('#statusbar').append(ich.placard_group({name: 'offline', placards: [{avatar: 'avatar2.png', nickname: 'Sue Heron'}]}));
 
 
 	$('#loginform').submit(function(){
