@@ -1,0 +1,95 @@
+html, body {
+	height: 100%;
+	margin: 0px;
+	font-family: arial;
+}
+header {
+	background-color: #e0e0e0;
+	height: 66px;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+}
+header h1 {
+	color: white;
+	padding: 10px;
+	font-size: 200%;
+}
+#wrap {
+	height: 100%;
+}
+#statusbar {
+	width: 79px;
+	border-right: 1px solid #eee;
+	position: fixed;
+	height: 100%;
+	top: 0px;
+	left: 0px;
+	margin-top: 66px;
+}
+#statusbar label {
+	font-size: 10px;
+	background: #666;
+	color: white;
+	display: block;
+	padding: 0px 0px 0px 10px;
+	margin: 15px 0px 0px;
+}
+#statusbar .user_placard {
+	height: 32px;
+	margin: 5px 5px;
+}
+#statusbar .user_placard .status {
+	width: 30px;
+	height: 30px;
+	border: 1px solid #eee;
+	margin: 0px 5px 0px 0px;
+	display: block;
+	float: left;
+}
+#statusbar img {
+	width: 32px;
+	height: 32px;
+}
+#users_offline .avatar {
+	opacity: 0.4;
+}
+#rooms {
+	padding-bottom: 80px;
+	margin: 66px 0px 0px 80px;
+}
+#controls {
+	position: fixed;
+	margin-left: 79px;
+	bottom: 0px;
+	background-color: #EEE;
+	width: 100%;
+	padding: 0px 5px 5px 5px;
+}
+#roomtabs {
+	margin: 2px 0px 10px 0px;
+}
+#roomtabs li {
+	display: inline;
+	background-color: #ddd;
+	padding: 2px 15px;
+}
+#roomtabs li.active {
+	background-color: #fff;
+}
+.room {
+	display: none;
+}
+.room.active {
+	display: block;
+}
+#roomtabs a {
+	color: #666;
+	text-decoration: none;
+}
+
+.room p {
+	font-size: 15px;
+	margin-top: 30px;
+}

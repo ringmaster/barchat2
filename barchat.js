@@ -20,10 +20,6 @@ app.configure(function(){
   });
   app.use(express.bodyParser());
   app.use(express.methodOverride());
-  app.use(express.errorHandler({
-    dumpExceptions:true, 
-    showStack:true
-  }));
   app.use(app.router);
   app.use(express.static(__dirname + '/htdocs'));
   app.enable("jsonp callback");
