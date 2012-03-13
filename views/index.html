@@ -46,11 +46,11 @@ header h1 {
 	padding: 0px 0px 0px 10px;
 	margin: 15px 0px 0px;
 }
-#statusbar .user {
+#statusbar .user_placard {
 	height: 32px;
 	margin: 5px 5px;
 }
-#statusbar .user .status {
+#statusbar .user_placard .status {
 	width: 30px;
 	height: 30px;
 	border: 1px solid #eee;
@@ -61,6 +61,9 @@ header h1 {
 #statusbar img {
 	width: 32px;
 	height: 32px;
+}
+#users_offline .avatar {
+	opacity: 0.4;
 }
 #rooms {
 	padding-bottom: 80px;
@@ -109,42 +112,44 @@ header h1 {
 	<h1>BarChat</h1>
 </header>
 
+<script id="user_placard" type="text/html">
+	<li class="user_placard">
+		<span class="status"></span>
+		<img class="avatar" src="{{ avatar }}" title="{{ nickname }}">
+	</li>
+</script>
+
 <div id="wrap">
 	<div id="statusbar">
 		<label>Online</label>
-		<ul>
-			<li class="user">
-				<span class="status"></span>
-				<img src="avatar.png">
-			</li>
+		<ul id="users_online">
 		</ul>
 		<label>Services</label>
-		<ul>
-			<li class="user">
-				<span class="status"></span>
-				<img src="github.png">
-			</li>
+		<ul id="users_services">
 		</ul>
 		<label>Offline</label>
-		<ul>
-			<li class="user">
-				<span class="status"></span>
-				<img src="avatar.png">
-			</li>
+		<ul id="users_offline">
 		</ul>
 
 	</div>
 
 	<div id="stage">
 		<div id="rooms">
-			<div id="room1" class="room active">
+			<div id="connect" class="room active">
+				<form id="loginform" action="/api/v1.0/getUserToken?callback=?" method="POST">
+					<table>
+						<tr><td><label for="server">Server:</label></td><td><select name="server" id="server">
+							<option value="http://home.lise:8080/api/v1.0/getUserToken?callback=?">Lise</option>
+						</select></td></tr>
+						<tr><td><label for="username">Username:</label></td><td><input type="text" name="username"></td></tr>
+						<tr><td><label for="password">Password:</label></td><td><input type="password" name="password"></td></tr>
+						<tr><td></td><td><input type="submit" value="Log In"></td></tr>
+					</table>
+				</form>
+			</div>
+			<div id="room1" class="room">
 			</div>
 			<div id="room2" class="room">
-				<form id="loginform" action="/api/v1.0/getUserToken?callback=?" method="POST">
-					<label>Username: <input type="text" name="username"></label>
-					<label>Password: <input type="password" name="password"></label>
-					<input type="submit" value="Log In">
-				</form>
 			</div>
 			<div id="room3" class="room">
 			</div>
@@ -152,7 +157,8 @@ header h1 {
 
 		<div id="controls">
 			<ul id="roomtabs">
-				<li class="active"><a href="#room1">Room 1</a></li>
+				<li id="connect" class="active"><a href="#connect">Connect</a></li>
+				<li><a href="#room1">Room 1</a></li>
 				<li><a href="#room2">Room 2</a></li>
 				<li><a href="#room3">Room 3</a></li>
 			</ul>
@@ -167,13 +173,13 @@ header h1 {
 <footer></footer>
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script type="text/javascript" src="https://raw.github.com/andyet/ICanHaz.js/master/ICanHaz.min.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/ICanHaz.js/0.9/ICanHaz.min.js"></script>
 <script type="text/javascript" src="http://wavded.github.com/humane-js/humane.js"></script>
 <script type="text/javascript">
 $(function(){
 	// Initialize room sample content
 	var s = 4;
-	$('.room').each(function(){
+	$('#room1,#room2,#room3').each(function(){
 		var element = $(this);
 		s++;
 		$.getJSON('http://json-lipsum.appspot.com/?amount=' + s + '&start=no&lang=en&callback=?', function(results) {
@@ -183,8 +189,17 @@ $(function(){
 		});
 	});
 
+	// Initialize user sample content
+	$('#users_online').append(ich.user_placard({avatar: 'avatar.png', nickname: 'Bill Jennings'}));
+	$('#users_services').append(ich.user_placard({avatar: 'github.png', nickname: 'GitHub'}));
+	$('#users_offline').append(ich.user_placard({avatar: 'avatar2.png', nickname: 'Sue Heron'}));
+
 
 	$('#loginform').submit(function(){
+		// @todo login with abstraction:
+		// var result = Servers.login($('#server').val(), $('#username').val(), $('#password').val());
+		// if(result.success) {humane.info('Logged in as ' + result.nickname + '.');} else {humane.error(result.errMsg);}
+		$('#loginform').attr('action', $('#server').val());
 		$.post(
 			$('#loginform').attr('action'), 
 			$('#loginform').serialize(), 
