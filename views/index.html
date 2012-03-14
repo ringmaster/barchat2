@@ -26,13 +26,36 @@
 	</div>
 </script>
 
+<script id="room_tab" type="text/html">
+<li class="roomtab" id="tab_{{room_id}}" data-room="{{room_id}}"><a href="#{{room_id}}">{{room_name}}</a></li>
+</script>
+
+<script id="room_contents" type="text/html">
+<div id="room_{{room_id}}" data-room="{{room_id}}" class="room">
+</div>
+</script>
+
+<script id="message" type="text/html">
+<div class="message">
+{{#user.username}}
+<div class="who">
+{{#user.avatar}}<img src="{{user.avatar}}" class="avatar">{{/user.avatar}}
+<span class="username">{{user.username}}</span>
+</div>
+{{/user.username}}
+<div class="message_texts">
+<div class="message_text" data-timestamp="{{timestamp}}"><span class="timestamp">{{msgdate}}</span>{{msg}}</div>
+</div>
+</div>
+</script>
+
 <div id="wrap">
 	<div id="statusbar">
 	</div>
 
 	<div id="stage">
 		<div id="rooms">
-			<div id="connect" class="room active">
+			<div id="connect" class="room active" data-room="connect">
 				<form id="loginform" action="/api/v1.0/getUserToken?callback=?" method="POST">
 					<table>
 						<tr><td><label for="server">Server:</label></td><td><select name="server" id="server">
@@ -44,23 +67,14 @@
 					</table>
 				</form>
 			</div>
-			<div id="room1" class="room">
-			</div>
-			<div id="room2" class="room">
-			</div>
-			<div id="room3" class="room">
-			</div>
 		</div>
 
 		<div id="controls">
 			<ul id="roomtabs">
-				<li id="connect" class="active"><a href="#connect">Connect</a></li>
-				<li><a href="#room1">Room 1</a></li>
-				<li><a href="#room2">Room 2</a></li>
-				<li><a href="#room3">Room 3</a></li>
+				<li id="connect" class="active" data-room="connect"><a href="#connect">Connect</a></li>
 			</ul>
 			<div id="entry">
-				<input type="text">
+				<div id="textinput" contentEditable></div>
 				<button>send</button>
 			</div>
 	</div>
@@ -70,7 +84,8 @@
 <footer></footer>
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/ICanHaz.js/0.9/ICanHaz.min.js"></script>
+<script type="text/javascript" src="https://raw.github.com/andyet/ICanHaz.js/master/ICanHaz.min.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js"></script>
 <script type="text/javascript" src="http://wavded.github.com/humane-js/humane.js"></script>
 <script type="text/javascript" src="http://{{$host}}/js/barchat.ui.js"></script>
 

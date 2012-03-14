@@ -14,7 +14,6 @@ app.configure(function(){
   app.register('.html', {
     compile: function(str, options){
       return function(locals){
-        console.log(options);
         str = str.replace(/\{\{\$(\w+)\}\}/g, function(str, $1){return options[$1]});
         return str;
       };

@@ -73,10 +73,14 @@ header h1 {
 #roomtabs li {
 	display: inline;
 	background-color: #ddd;
-	padding: 2px 15px;
+	margin-right: 3px;
+	padding-top: 2px;
 }
 #roomtabs li.active {
 	background-color: #fff;
+}
+#roomtabs li a {
+	padding: 2px 15px;
 }
 .room {
 	display: none;
@@ -88,6 +92,52 @@ header h1 {
 	color: #666;
 	text-decoration: none;
 }
+
+.room .message {
+	clear: both;
+	margin: 20px 20px 0px;
+}
+
+.room .who {
+	float: left;
+	width: 64px;
+	font-size: xx-small;
+	text-align: center;
+}
+.room .who .avatar {
+	width: 64px;
+	height: 64px;
+	background-color: gray;
+}
+.room .message_texts {
+	padding-left: 10px;
+	margin-left: 64px;
+}
+.room .message_text {
+	border-top: 1px solid #eee;
+	padding-top: 10px;
+	font-size: small;
+}
+.room .message .timestamp {
+	float: right;
+	color: #999;
+	padding: 2px;
+	font-size: x-small;
+	margin-left: 10px;
+	margin-bottom: 5px;
+}
+
+#textinput {
+	border: inset 1px;
+	padding: 5px;
+	width: 80%;
+	overflow: auto;
+	background-color: white;
+	float: left;
+	max-height: 200px;
+}
+
+
 
 .room p {
 	font-size: 15px;
