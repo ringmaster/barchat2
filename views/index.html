@@ -4,7 +4,7 @@
 	<title>BarChat</title>
 	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.4.1/build/cssreset/cssreset-min.css" />
 	<link rel="stylesheet" type="text/css" href="http://wavded.github.com/humane-js/themes/libnotify.css" />
-	<link rel="stylesheet" type="text/css" href="http://home.lise:8080/css/barchat.css" />
+	<link rel="stylesheet" type="text/css" href="http://{{$host}}/css/barchat.css" />
 </head>
 <body>
 
@@ -13,8 +13,8 @@
 </header>
 
 <script id="placard_group" type="text/html">
-	<div class="placards">
-		<label>{{name}}</label>
+	<div class="placards" id="{{name}}">
+		<label>{{title}}</label>
 		<ul>
 		{{#placards}}
 			<li class="user_placard">
@@ -36,7 +36,7 @@
 				<form id="loginform" action="/api/v1.0/getUserToken?callback=?" method="POST">
 					<table>
 						<tr><td><label for="server">Server:</label></td><td><select name="server" id="server">
-							<option value="http://home.lise:8080/api/v1.0/getUserToken?callback=?">Lise</option>
+							<option value="http://{{$host}}/api/v1.0/getUserToken?callback=?">Lise</option>
 						</select></td></tr>
 						<tr><td><label for="username">Username:</label></td><td><input type="text" name="username"></td></tr>
 						<tr><td><label for="password">Password:</label></td><td><input type="password" name="password"></td></tr>
@@ -72,7 +72,7 @@
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/ICanHaz.js/0.9/ICanHaz.min.js"></script>
 <script type="text/javascript" src="http://wavded.github.com/humane-js/humane.js"></script>
-<script type="text/javascript" src="http://home.lise:8080/js/barchat.ui.js"></script>
+<script type="text/javascript" src="http://{{$host}}/js/barchat.ui.js"></script>
 
 </body>
 </html>

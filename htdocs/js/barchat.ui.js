@@ -12,9 +12,9 @@ $(function(){
 	});
 
 	// Initialize user sample content
-	$('#statusbar').append(ich.placard_group({name: 'online', placards: [{avatar: 'avatar.png', nickname: 'Bill Jennings'}]}));
-	$('#statusbar').append(ich.placard_group({name: 'services', placards: [{avatar: 'github.png', nickname: 'GitHub'}]}));
-	$('#statusbar').append(ich.placard_group({name: 'offline', placards: [{avatar: 'avatar2.png', nickname: 'Sue Heron'}]}));
+	$('#statusbar').append(ich.placard_group({name: 'users_online', title: 'online', placards: [{avatar: 'avatar.png', nickname: 'Bill Jennings'}]}));
+	$('#statusbar').append(ich.placard_group({name: 'users_services', title: 'services', placards: [{avatar: 'github.png', nickname: 'GitHub'}]}));
+	$('#statusbar').append(ich.placard_group({name: 'users_offline', title: 'offline', placards: [{avatar: 'avatar2.png', nickname: 'Sue Heron'}]}));
 
 
 	$('#loginform').submit(function(){

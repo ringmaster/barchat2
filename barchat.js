@@ -14,6 +14,8 @@ app.configure(function(){
   app.register('.html', {
     compile: function(str, options){
       return function(locals){
+        console.log(options);
+        str = str.replace(/\{\{\$(\w+)\}\}/g, function(str, $1){return options[$1]});
         return str;
       };
     }
@@ -64,7 +66,7 @@ var Messages = mongoose.model('Messages', MessagesSchema);
 
 //app.get('/', routes.index);
 app.get('/', function(req,res) {
-  res.render('index.html');
+  res.render('index.html', {host: req.headers.host});
 });
 
 app.post("/api/v1.0/getUserToken", function(req, res) {
