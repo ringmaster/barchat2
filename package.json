@@ -9,7 +9,7 @@
   },
   "main": "barchat.js",
   "engines": {
-    "node": "~v0.4.10"
+    "node": ">=0.4.10"
   },
   "dependencies": {
     "mongoose": "2.5.10",
