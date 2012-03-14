@@ -1,0 +1,7 @@
+# .htaccess allows Apache to proxy to BarChat on port 8080
+# APACHE REQUIREMENTS: mod_rewrite, mod_proxy
+
+Options +FollowSymLinks -Indexes -MultiViews
+RewriteEngine on
+RewriteRule ^index.html http://%{HTTP_HOST}:8080/ [P]
+RewriteRule ^(.+)$ http://%{HTTP_HOST}:8080/$1 [P]
