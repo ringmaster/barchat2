@@ -77,14 +77,50 @@ app.post("/api/v1.0/getUserToken", function(req, res) {
       token = crypto.createHash('md5').update(Math.random().toString()).digest("hex");
       doc.sessions.push({token: token, ping: new Date});
       doc.save();
-      res.json({'uid': doc._id, 'token': token, 'usernamez': doc.username, 'nickname': doc.nickname});
+      res.json({'uid': doc._id, 'token': token, 'nickname': doc.nickname});
     }
   });
 });
 
 app.get("/api/v1.0/getMessages", function(req, res) {
-  Messages.find({}, function(err, docs){
-    res.json('ok');
+  Users.findOne({'sessions.token': req.query.token}, function(err, doc){
+    if(doc == null) {
+      res.json({err: 1, errMsg: 'Inavlid Token'});
+    }
+    else {
+      for(var index in doc.sessions) {
+        if(doc.sessions[index].token == req.query.token) {
+          session = index;
+          break;
+        }
+      }
+      doc.sessions[index].ping = new Date();
+      doc.save();
+
+      // db.users.update({'sessions.token': 'a1506f3509d289bd82a8d19af97cd3cd'}, {$addToSet: {'sessions.$.rooms': 'room1'}})
+      Messages.find({room: {$in: doc.sessions[session].rooms}, timestamp: {$gt: parseInt(req.query.timestamp)}}, function(err, docs){
+        res.json(docs);
+      });
+    }
+  });
+});
+
+app.get("/api/v1.0/joinRoom", function(req, res) {
+  Users.findOne({'sessions.token': req.query.token}, function(err, doc){
+    if(doc == null) {
+      res.json({err: 1, errMsg: 'Inavlid Token'});
+    }
+    else {
+      for(var index in doc.sessions) {
+        if(doc.sessions[index].token == req.query.token) {
+          session = index;
+          break;
+        }
+      }
+      doc.sessions[index].ping = new Date();
+      doc.sessions[index].rooms.push(req.query.room);
+      doc.save();
+    }
   });
 });
 

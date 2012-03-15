@@ -7,9 +7,9 @@ BarchatUI.removeRoom = function(room_id) {
 	$('.roomtab[data-room="' + room_id + '"]').remove();
 	$('.room[data-room="' + room_id + '"]').remove();
 }
-BarchatUI.msgRoom = function(room_id, msgdatas) {
-	stage = $('.room[data-room="' + room_id + '"]');
+BarchatUI.msgRoom = function(msgdatas) {
 	for(var i in msgdatas) {
+		stage = $('.room[data-room="' + msgdatas[i].room + '"]');
 		msgdate = new Date(msgdatas[i].timestamp);
 		msgdatas[i].msgdate = msgdate.toString('ddd h:mmtt');
 
@@ -69,26 +69,26 @@ $(function(){
 			var element = z;
 			BarchatUI.addRoom('room' + element, 'Room ' + element);
 
-			var t=10;
-			for(var m = 0; m <= 7; m++) {
-				var url = "http://search.twitter.com/search.json?q=kitten&callback=?&rpp='+t+'&page=1&lang=en";
-				$.getJSON(url,
-					function(data){
-						output = '';
-						if(data.results){
-							for(i=0;i<t && i<data.results.length;i++){
-								var r = '';
-								r += data.results[i].text;
-								r = r.toUpperCase().substr(0,1) + r.toLowerCase().substr(1) + ' ';
-								if(i%5 == 0 && i>0)r = '<br /><br />' + r;
-								output += r;
-							}
-						}
-						output = shuffle(output.replace(/<.+?>/ig, '').split(' ')).join(' ');
-						BarchatUI.msgRoom('room' + element, [{user: users[Math.floor(Math.random() * users.length)], msg: output, timestamp: new Date().getTime()}]);
-					}
-				);
-			}
+			// var t=10;
+			// for(var m = 0; m <= 7; m++) {
+			// 	var url = "http://search.twitter.com/search.json?q=kitten&callback=?&rpp='+t+'&page=1&lang=en";
+			// 	$.getJSON(url,
+			// 		function(data){
+			// 			output = '';
+			// 			if(data.results){
+			// 				for(i=0;i<t && i<data.results.length;i++){
+			// 					var r = '';
+			// 					r += data.results[i].text;
+			// 					r = r.toUpperCase().substr(0,1) + r.toLowerCase().substr(1) + ' ';
+			// 					if(i%5 == 0 && i>0)r = '<br /><br />' + r;
+			// 					output += r;
+			// 				}
+			// 			}
+			// 			output = shuffle(output.replace(/<.+?>/ig, '').split(' ')).join(' ');
+			// 			BarchatUI.msgRoom([{user: users[Math.floor(Math.random() * users.length)], msg: output, room: 'room' + element, timestamp: new Date().getTime()}]);
+			// 		}
+			// 	);
+			// }
 		}
 		c();
 	}
@@ -107,23 +107,15 @@ $(function(){
 
 
 	$('#loginform').submit(function(){
-		// @todo login with abstraction:
-		// var result = Servers.login($('#server').val(), $('#username').val(), $('#password').val());
-		// if(result.success) {humane.info('Logged in as ' + result.nickname + '.');} else {humane.error(result.errMsg);}
-		$('#loginform').attr('action', $('#server').val());
-		$.post(
-			$('#loginform').attr('action'), 
-			$('#loginform').serialize(), 
-			function(response){
-				if(response.err) {
-					humane.error(response.errMsg);
-				}
-				else {
-					humane.info('Logged in as ' + response.nickname + '.');
-				}
-			},
-			'jsonp'
-		);
+		var server = new Barchat.Server($('#server').val(), $('#username').val(), $('#password').val());
+		server = Barchat.create($('#server').val(), function(server){
+			$(server).bind({
+				error: function(e, errMsg){humane.error(errMsg)},
+				connected: function(e, connMsg, response){humane.info(connMsg)},
+				message: function(e, messages){BarchatUI.msgRoom(messages);}
+			});
+		});
+		server.connect($('#username').val(), $('#password').val());
 		return false;
 	});
 
@@ -134,11 +126,5 @@ $(function(){
 		$(this).parents('li').addClass('active');
 		return false;
 	});
-
-	// window.setInterval(function(){
-	// 	$.get('/api/v1.0/getMessages', 'foo=1', function(data){
-	// 		console.log(data);
-	// 	}, 'jsonp');
-	// }, 2000);
 
 });
