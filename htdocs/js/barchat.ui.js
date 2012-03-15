@@ -11,39 +11,84 @@ BarchatUI.msgRoom = function(room_id, msgdatas) {
 	stage = $('.room[data-room="' + room_id + '"]');
 	for(var i in msgdatas) {
 		msgdate = new Date(msgdatas[i].timestamp);
-		msgdatas[i].msgdate = msgdate.toString('ddd HH:mm');
-		stage.append(ich.message(msgdatas[i]));
+		msgdatas[i].msgdate = msgdate.toString('ddd h:mmtt');
+
+		var ip = BarchatUI.getInsertionPoint(stage, msgdate.getTime());
+
+		if(ip) {
+			ip.before(ich.message(msgdatas[i]));
+		}
+		else {
+			lastuser = $('.message:last', stage).data('user');
+			if(lastuser == msgdatas[i].user.user_id) {
+				$('.message:last .message_texts', stage).append(ich.message_text(msgdatas[i]));
+			}
+			else {
+				stage.append(ich.message(msgdatas[i]));
+			}
+		}
 	}
 }
+// @todo still an issue with messages having the same millisecond timestamp?
 BarchatUI.getInsertionPoint = function(stage, d) {
-	msgs = $('.message', stage);
+	msgs = $('.message_text', stage);
 	if(msgs.length == 0) return null;
+	if($(msgs[msgs.length - 1]).data('timestamp') < d) return null;
 
-	i = Math.floor(msgs.length/2);
+	var older = 0;
+	var newer = msgs.length - 1;
 
-	cmsg = $(msgs[i]);
-	if(new Date(cmsg.data('timestamp')).isAfter(d) ) {
-		i = Math.floor(i/2);
+	while(newer - older > 1) {
+		center = Math.floor((older+newer)/2);
+		cmsg = $(msgs[center]);
+		if(cmsg.data('timestamp') > d ) {
+			newer = center;
+		}
+		if(cmsg.data('timestamp') < d ) {
+			older = center;
+		}
+		if(cmsg.data('timestamp') == d ) {
+			older = center + 1;
+		}
+		console.log(older, newer);
 	}
-	if(new Date(cmsg.data('timestamp')).isBefore(d) ) {
-		i = Math.floor((msgs.length-i)/2);
-	}
+
+	return $(msgs[newer]);
 }
+
+function shuffle(o){ //v1.0, code based on Fisher-Yates 
+	for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+	return o;
+};
 
 $(function(){
 	// Initialize room sample content
 	var users = [{username: 'billj', avatar: 'avatar.png', user_id: 1},{username: 'sueh', avatar: 'avatar2.png', user_id: 2}];
-	var s = 4;
 	for(var z = 1; z<=3; z++) {
 		c = function(){
 			var element = z;
 			BarchatUI.addRoom('room' + element, 'Room ' + element);
-			s++;
-			$.getJSON('http://json-lipsum.appspot.com/?amount=' + s + '&start=no&lang=en&callback=?', function(results) {
-				for(var p in results.lipsum) {
-					BarchatUI.msgRoom('room' + element, [{user: users[Math.floor(Math.random() * users.length)], msg: results.lipsum[p], timestamp: new Date().getTime()}]);
-				}
-			});
+
+			var t=10;
+			for(var m = 0; m <= 7; m++) {
+				var url = "http://search.twitter.com/search.json?q=kitten&callback=?&rpp='+t+'&page=1&lang=en";
+				$.getJSON(url,
+					function(data){
+						output = '';
+						if(data.results){
+							for(i=0;i<t && i<data.results.length;i++){
+								var r = '';
+								r += data.results[i].text;
+								r = r.toUpperCase().substr(0,1) + r.toLowerCase().substr(1) + ' ';
+								if(i%5 == 0 && i>0)r = '<br /><br />' + r;
+								output += r;
+							}
+						}
+						output = shuffle(output.replace(/<.+?>/ig, '').split(' ')).join(' ');
+						BarchatUI.msgRoom('room' + element, [{user: users[Math.floor(Math.random() * users.length)], msg: output, timestamp: new Date().getTime()}]);
+					}
+				);
+			}
 		}
 		c();
 	}

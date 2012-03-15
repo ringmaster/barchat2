@@ -36,7 +36,7 @@
 </script>
 
 <script id="message" type="text/html">
-<div class="message">
+<div class="message" data-user="{{user.user_id}}">
 {{#user.username}}
 <div class="who">
 {{#user.avatar}}<img src="{{user.avatar}}" class="avatar">{{/user.avatar}}
@@ -44,9 +44,13 @@
 </div>
 {{/user.username}}
 <div class="message_texts">
+{{>message_text}}
+</div>
+</div>
+</script>
+
+<script id="message_text" type="text/html">
 <div class="message_text" data-timestamp="{{timestamp}}"><span class="timestamp">{{msgdate}}</span>{{msg}}</div>
-</div>
-</div>
 </script>
 
 <div id="wrap">
@@ -84,9 +88,9 @@
 <footer></footer>
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script type="text/javascript" src="https://raw.github.com/andyet/ICanHaz.js/master/ICanHaz.min.js"></script>
-<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js"></script>
-<script type="text/javascript" src="http://wavded.github.com/humane-js/humane.js"></script>
+<script type="text/javascript" src="http://{{$host}}/js/ICanHaz.min.js"></script>
+<script type="text/javascript" src="http://{{$host}}/js/date.min.js"></script>
+<script type="text/javascript" src="http://{{$host}}/js/humane.js"></script>
 <script type="text/javascript" src="http://{{$host}}/js/barchat.ui.js"></script>
 
 </body>
