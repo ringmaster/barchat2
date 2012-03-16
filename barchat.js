@@ -2,7 +2,9 @@ var express = require('express')
   , routes = require('./routes')
   , mongoose = require("mongoose")
   , Schema = mongoose.Schema
-  , crypto = require('crypto');
+  , crypto = require('crypto')
+  , _ = require("underscore")
+  , ObjectId = require('mongoose').Types.ObjectId;
 
 var app = module.exports = express.createServer();
 
@@ -36,6 +38,12 @@ app.configure('production', function(){
 
 // Database
 
+var RoomsSchema = new Schema({
+  title: String,
+  properties: {},
+  permissions: []
+});
+
 var SessionsSchema = new Schema({
   token: String,
   ping: Date,
@@ -60,6 +68,26 @@ var MessagesSchema = new Schema({
 mongoose.connect('mongodb://localhost/barchat');
 var Users = mongoose.model('Users', UsersSchema);
 var Messages = mongoose.model('Messages', MessagesSchema);
+var Sessions = mongoose.model('Sessions', SessionsSchema);
+var Rooms = mongoose.model('Rooms', SessionsSchema);
+
+// Utility
+
+var userFromToken = function(token, success, failure) {
+  var query = {'sessions._id': token};
+  Users.findOne(query, function(err, doc){
+    if(doc == null) {
+      failure({err: 1, errMsg: 'Inavlid Token'});
+    }
+    else {
+      doc.sessions.id(token).ping = new Date();
+      doc.save();
+
+      success(doc);
+    }
+  });
+
+}
 
 // Routes
 
@@ -74,38 +102,81 @@ app.post("/api/v1.0/getUserToken", function(req, res) {
       res.json({err: 1, errMsg: 'Inavlid Username/Password'});
     }
     else {
-      token = crypto.createHash('md5').update(Math.random().toString()).digest("hex");
-      doc.sessions.push({token: token, ping: new Date});
+      session = new Sessions();
+      session.ping = new Date();
+      session.rooms = ['4f6383b97b6b58273f88ca51'];
+      doc.sessions.push(session)
       doc.save();
-      res.json({'uid': doc._id, 'token': token, 'nickname': doc.nickname});
+      res.json({'uid': doc._id, 'nickname': doc.nickname, 'token': session._id, 'session': session});
     }
   });
+});
+
+app.get("/api/v1.0/getSession", function(req, res) {
+  var session_id = req.query.token;
+  userFromToken(
+    session_id, 
+    function(user){
+      res.json(user.sessions.id(session_id));
+    },
+    function(error){
+      res.json(error);
+    })
+});
+
+
+app.get("/api/v1.0/getMyRooms", function(req, res) {
+  var session_id = req.query.token;
+  userFromToken(
+    session_id, 
+    function(user){
+      Rooms.find({_id: {$in: user.sessions.id(session_id).rooms}}, function (err, docs){
+        res.json(docs);
+      });
+    },
+    function(error){
+      res.json(error);
+    })
 });
 
 app.get("/api/v1.0/getMessages", function(req, res) {
-  Users.findOne({'sessions.token': req.query.token}, function(err, doc){
-    if(doc == null) {
-      res.json({err: 1, errMsg: 'Inavlid Token'});
-    }
-    else {
-      for(var index in doc.sessions) {
-        if(doc.sessions[index].token == req.query.token) {
-          session = index;
-          break;
-        }
-      }
-      doc.sessions[index].ping = new Date();
-      doc.save();
-
+  var session_id = req.query.token;
+  userFromToken(
+    session_id, 
+    function(user){
+      console.log(user.username, session_id, user.sessions.id(session_id).ping);
       // db.users.update({'sessions.token': 'a1506f3509d289bd82a8d19af97cd3cd'}, {$addToSet: {'sessions.$.rooms': 'room1'}})
-      Messages.find({room: {$in: doc.sessions[session].rooms}, timestamp: {$gt: parseInt(req.query.timestamp)}}, function(err, docs){
+      var room_ids = _.map(user.sessions.id(session_id).rooms, function(room){return ObjectId(room)});
+      Messages.find({room: {$in: room_ids}, timestamp: {$gt: parseInt(req.query.timestamp)}}, function(err, docs){
         res.json(docs);
       });
-    }
-  });
+    },
+    function(error){
+      res.json(error);
+    })
 });
 
 app.get("/api/v1.0/joinRoom", function(req, res) {
+  var session_id = req.query.token;
+  console.log(session_id);
+  userFromToken(
+    session_id, 
+    function(user){
+      user.sessions.id(session_id).rooms.push(req.query.room);
+      user.sessions.id(session_id).rooms = _.uniq(user.sessions.id(session_id).rooms);
+      user.sessions.id(session_id).save();
+      Rooms.find({_id: {$in: user.sessions.id(session_id).rooms}}, function (err, docs){
+        console.log(user.sessions.id(session_id).rooms, err, docs);
+        res.json(docs);
+      });
+    },
+    function(error){
+      res.json(error);
+    }
+  );
+});
+
+app.get("/api/v1.0/sendMessage", function(req, res) {
   Users.findOne({'sessions.token': req.query.token}, function(err, doc){
     if(doc == null) {
       res.json({err: 1, errMsg: 'Inavlid Token'});
@@ -123,6 +194,10 @@ app.get("/api/v1.0/joinRoom", function(req, res) {
     }
   });
 });
+
+app.get("/api/v1.0/partRoom", function(req, res) {});
+app.get("/api/v1.0/listUsers", function(req, res) {});
+app.get("/api/v1.0/listUsers", function(req, res) {});
 
 
 app.listen(8080);

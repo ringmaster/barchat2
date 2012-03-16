@@ -23,6 +23,15 @@ Barchat.Server.prototype.connect = function(username, password) {
 			else {
 				server.token = response.token;
 				server.username = username;
+
+				$.get('/api/v1.0/listRooms', {token: server.token}, function(data){
+					server.rooms = data;
+					for(var room in server.rooms) {
+						$(server).trigger('join', [server.rooms[room]]);
+					}
+					console.log(data);
+				}, 'jsonp');
+
 				server.pollHandle = window.setInterval(function(){
 					$.get('/api/v1.0/getMessages', {token: server.token, timestamp: server.latest}, function(data){
 						for(var msg in data) {
