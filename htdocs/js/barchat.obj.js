@@ -26,24 +26,13 @@ Barchat.Server.prototype.connect = function(username, password) {
 
 				$.get(server.server_url +'/getMyRooms', {}, function(data){
 					server.rooms = data;
-					for(var room in server.rooms) {
-						$(server).trigger('join', [server.server_url, server.rooms[room]]);
-					}
-					console.log(data);
+					_.each(server.rooms, function(room) {
+						$(server).trigger('join', [server.server_url, room]);
+					});
 				}, 'jsonp');
 
-				server.pollHandle = window.setInterval(function(){
-					$.get(server.server_url + '/getMessages', {timestamp: server.latest}, function(data){
-						for(var msg in data) {
-							if(data[msg].timestamp != undefined) {
-								server.latest = data[msg].timestamp;
-							}
-						}
-						$(server).trigger('message', [data]);
-						console.log(data);
-					}, 'jsonp');
-				}, 2000);
-				$(server).trigger('connected', [server.username + ' is now connected to ' + server.server, response]);
+				server.pollHandle = window.setInterval(function(){server.getMessages();}, 2000);
+				$(server).trigger('connected', [server.username + ' is now connected to ' + server.server_url, response]);
 			}
 		},
 		'jsonp'
@@ -55,13 +44,29 @@ Barchat.Server.prototype.disconnect = function() {
 	$(server).trigger('disconnected', [server.username + ' is now disconnected from ' + server.server]);
 }
 
+Barchat.Server.prototype.getMessages = function() {
+	var server = this;
+	$.get(server.server_url + '/getMessages', {timestamp: server.latest}, function(data){
+		$(server).trigger('message', [data]);
+		if(data.length > 0) {
+			server.latest = _.reduce(data, function(memo, msg){
+				if(msg.timestamp != undefined) {
+					return Math.max(memo, msg.timestamp);
+				}
+			}, server.latest);
+		}
+		console.log(data);
+	}, 'jsonp');
+}
+
 Barchat.Server.prototype.sendMessage = function(room, message) {
+	var server = this;
 	$.post(
 		server.server_url + '/sendMessage',
 		{room: room, raw: message},
 		// @todo Add send failure handler
 		function(){
-			
+			server.getMessages();
 		}
 	);
 }

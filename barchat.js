@@ -55,19 +55,16 @@ var UsersSchema = new Schema({
   username: String,
   password: String,
   nickname: String,
+  avatar: String,
   sessions: [SessionsSchema]
 });
 
 var MessagesSchema = new Schema({
-  user: {
-    username: String,
-    avatar: String,
-    user_id: String
-  },
-  room: String,
+  user: {type: {}, index: true},
+  room: {type: String, index: true},
   raw: String,
   msg: String,
-  timestamp: Number,
+  timestamp: {type: Number, index: true},
   toUserId: String
 });
 
@@ -97,7 +94,6 @@ var userFromToken = function(token, success, failure) {
 
 // Routes
 
-//app.get('/', routes.index);
 app.get('/', function(req,res) {
   res.render('index.html', {host: req.headers.host});
 });
@@ -110,11 +106,13 @@ app.post("/api/v1.0/getUserToken", function(req, res) {
     else {
       session = new Sessions();
       session.ping = new Date();
-      session.rooms = ['4f6383b97b6b58273f88ca51'];
-      doc.sessions.push(session)
-      doc.save();
-      res.cookie('session', session._id);
-      res.json({'uid': doc._id, 'nickname': doc.nickname, 'token': session._id, 'session': session});
+      Rooms.find({'properties.default': 1}, function(err, rooms){
+        session.rooms = _.map(rooms, function(room){return room._id;});
+        doc.sessions.push(session)
+        doc.save();
+        res.cookie('session', session._id);
+        res.json({'uid': doc._id, 'nickname': doc.nickname, 'token': session._id, 'session': session});
+      })
     }
   });
 });
@@ -152,7 +150,6 @@ app.get("/api/v1.0/getMessages", function(req, res) {
     session_id, 
     function(user){
       console.log(user.username, session_id, user.sessions.id(session_id).ping);
-      // db.users.update({'sessions.token': 'a1506f3509d289bd82a8d19af97cd3cd'}, {$addToSet: {'sessions.$.rooms': 'room1'}})
       var room_ids = _.map(user.sessions.id(session_id).rooms, function(room){return ObjectId(room)});
       Messages.find({room: {$in: room_ids}, timestamp: {$gt: parseInt(req.query.timestamp)}}, function(err, docs){
         res.json(docs);
@@ -165,15 +162,14 @@ app.get("/api/v1.0/getMessages", function(req, res) {
 
 app.get("/api/v1.0/joinRoom", function(req, res) {
   var session_id = req.cookies.session;
-  console.log(session_id);
   userFromToken(
     session_id, 
     function(user){
+      console.log(user.username, session_id, user.sessions.id(session_id).ping, 'join', req.query.room);
       user.sessions.id(session_id).rooms.push(req.query.room);
       user.sessions.id(session_id).rooms = _.uniq(user.sessions.id(session_id).rooms);
       user.sessions.id(session_id).save();
       Rooms.find({_id: {$in: user.sessions.id(session_id).rooms}}, function (err, docs){
-        console.log(user.sessions.id(session_id).rooms, err, docs);
         res.json(docs);
       });
     },
@@ -185,12 +181,15 @@ app.get("/api/v1.0/joinRoom", function(req, res) {
 
 app.post("/api/v1.0/sendMessage", function(req, res) {
   var session_id = req.cookies.session;
-  console.log(session_id, req);
   userFromToken(
     session_id, 
     function(user){
+      console.log(user.username, user, session_id, user.sessions.id(session_id).ping, 'sendMessage', req.body.room);
       message = new Messages();
-      message.user = {username: user.username, avatar: user.avatar, user_id: user._id};
+
+console.log(user.avatar, typeof(user.avatar));
+
+      message.user = {'username': user.username, 'avatar': user.avatar, 'user_id': user._id};
       message.raw = req.body.raw,
       message.msg = req.body.raw;
       message.room = req.body.room;
@@ -199,7 +198,6 @@ app.post("/api/v1.0/sendMessage", function(req, res) {
       message.save();
 
       res.json(message);
-      console.log(message);
     },
     function(error){
       res.json(error);
