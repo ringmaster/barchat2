@@ -27,7 +27,7 @@
 </script>
 
 <script id="room_tab" type="text/html">
-<li class="roomtab" id="tab_{{room_id}}" data-room="{{room_id}}"><a href="#{{room_id}}">{{room_name}}</a></li>
+<li class="roomtab" id="tab_{{room_id}}" data-room="{{room_id}}" data-server="{{server}}"><a href="#{{room_id}}">{{room_name}}</a></li>
 </script>
 
 <script id="room_contents" type="text/html">
@@ -60,10 +60,10 @@
 	<div id="stage">
 		<div id="rooms">
 			<div id="connect" class="room active" data-room="connect">
-				<form id="loginform" action="/api/v1.0/getUserToken?callback=?" method="POST">
+				<form id="loginform" action="/api/v1.0" method="POST">
 					<table>
 						<tr><td><label for="server">Server:</label></td><td><select name="server" id="server">
-							<option value="http://{{$host}}/api/v1.0/getUserToken?callback=?">Lise</option>
+							<option value="http://{{$host}}/api/v1.0">Lise</option>
 						</select></td></tr>
 						<tr><td><label for="username">Username:</label></td><td><input type="text" id="username" name="username"></td></tr>
 						<tr><td><label for="password">Password:</label></td><td><input type="password" id="password" name="password"></td></tr>
@@ -88,6 +88,7 @@
 <footer></footer>
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script type="text/javascript" src="http://{{$host}}/js/underscore-min.js"></script>
 <script type="text/javascript" src="http://{{$host}}/js/ICanHaz.min.js"></script>
 <script type="text/javascript" src="http://{{$host}}/js/date.min.js"></script>
 <script type="text/javascript" src="http://{{$host}}/js/humane.js"></script>

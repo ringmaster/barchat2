@@ -2,7 +2,7 @@ Barchat = new Object();
 Barchat.servers = {};
 
 Barchat.Server = function(server) {
-	this.server = server;
+	this.server_url = server;
 	this.token = false;
 	this.latest = 0;
 }
@@ -14,8 +14,8 @@ Barchat.Server.prototype.connect = function(username, password) {
 		return;
 	}
 	$.post(
-		server.server, 
-		'username=' + username + '&password=' + password, 
+		server.server_url + '/getUserToken', 
+		{'username': username, 'password': password}, 
 		function(response){
 			if(response.err) {
 				$(server).trigger('error', [response.errMsg]);
@@ -24,16 +24,16 @@ Barchat.Server.prototype.connect = function(username, password) {
 				server.token = response.token;
 				server.username = username;
 
-				$.get('/api/v1.0/listRooms', {token: server.token}, function(data){
+				$.get(server.server_url +'/getMyRooms', {}, function(data){
 					server.rooms = data;
 					for(var room in server.rooms) {
-						$(server).trigger('join', [server.rooms[room]]);
+						$(server).trigger('join', [server.server_url, server.rooms[room]]);
 					}
 					console.log(data);
 				}, 'jsonp');
 
 				server.pollHandle = window.setInterval(function(){
-					$.get('/api/v1.0/getMessages', {token: server.token, timestamp: server.latest}, function(data){
+					$.get(server.server_url + '/getMessages', {timestamp: server.latest}, function(data){
 						for(var msg in data) {
 							if(data[msg].timestamp != undefined) {
 								server.latest = data[msg].timestamp;
@@ -55,6 +55,16 @@ Barchat.Server.prototype.disconnect = function() {
 	$(server).trigger('disconnected', [server.username + ' is now disconnected from ' + server.server]);
 }
 
+Barchat.Server.prototype.sendMessage = function(room, message) {
+	$.post(
+		server.server_url + '/sendMessage',
+		{room: room, raw: message},
+		// @todo Add send failure handler
+		function(){
+			
+		}
+	);
+}
 
 Barchat.create = function(server, callback) {
 	if(this.servers[server] == undefined) {
@@ -66,4 +76,9 @@ Barchat.create = function(server, callback) {
 		}
 	}
 	return this.servers[server];
+}
+
+Barchat.sendMessage = function(server, room, message) {
+	server = this.servers[server];
+	return server.sendMessage(room, message);
 }

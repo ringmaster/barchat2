@@ -23,6 +23,7 @@ app.configure(function(){
   });
   app.use(express.bodyParser());
   app.use(express.methodOverride());
+  app.use(express.cookieParser());
   app.use(app.router);
   app.use(express.static(__dirname + '/htdocs'));
   app.enable("jsonp callback");
@@ -58,10 +59,15 @@ var UsersSchema = new Schema({
 });
 
 var MessagesSchema = new Schema({
-  userId: String,
+  user: {
+    username: String,
+    avatar: String,
+    user_id: String
+  },
+  room: String,
   raw: String,
-  display: String,
-  posted: Date,
+  msg: String,
+  timestamp: Number,
   toUserId: String
 });
 
@@ -107,13 +113,14 @@ app.post("/api/v1.0/getUserToken", function(req, res) {
       session.rooms = ['4f6383b97b6b58273f88ca51'];
       doc.sessions.push(session)
       doc.save();
+      res.cookie('session', session._id);
       res.json({'uid': doc._id, 'nickname': doc.nickname, 'token': session._id, 'session': session});
     }
   });
 });
 
 app.get("/api/v1.0/getSession", function(req, res) {
-  var session_id = req.query.token;
+  var session_id = req.cookies.session;
   userFromToken(
     session_id, 
     function(user){
@@ -126,7 +133,7 @@ app.get("/api/v1.0/getSession", function(req, res) {
 
 
 app.get("/api/v1.0/getMyRooms", function(req, res) {
-  var session_id = req.query.token;
+  var session_id = req.cookies.session;
   userFromToken(
     session_id, 
     function(user){
@@ -140,7 +147,7 @@ app.get("/api/v1.0/getMyRooms", function(req, res) {
 });
 
 app.get("/api/v1.0/getMessages", function(req, res) {
-  var session_id = req.query.token;
+  var session_id = req.cookies.session;
   userFromToken(
     session_id, 
     function(user){
@@ -157,7 +164,7 @@ app.get("/api/v1.0/getMessages", function(req, res) {
 });
 
 app.get("/api/v1.0/joinRoom", function(req, res) {
-  var session_id = req.query.token;
+  var session_id = req.cookies.session;
   console.log(session_id);
   userFromToken(
     session_id, 
@@ -176,28 +183,33 @@ app.get("/api/v1.0/joinRoom", function(req, res) {
   );
 });
 
-app.get("/api/v1.0/sendMessage", function(req, res) {
-  Users.findOne({'sessions.token': req.query.token}, function(err, doc){
-    if(doc == null) {
-      res.json({err: 1, errMsg: 'Inavlid Token'});
+app.post("/api/v1.0/sendMessage", function(req, res) {
+  var session_id = req.cookies.session;
+  console.log(session_id, req);
+  userFromToken(
+    session_id, 
+    function(user){
+      message = new Messages();
+      message.user = {username: user.username, avatar: user.avatar, user_id: user._id};
+      message.raw = req.body.raw,
+      message.msg = req.body.raw;
+      message.room = req.body.room;
+      message.timestamp = new Date().getTime();
+      message.toUserId = null;
+      message.save();
+
+      res.json(message);
+      console.log(message);
+    },
+    function(error){
+      res.json(error);
     }
-    else {
-      for(var index in doc.sessions) {
-        if(doc.sessions[index].token == req.query.token) {
-          session = index;
-          break;
-        }
-      }
-      doc.sessions[index].ping = new Date();
-      doc.sessions[index].rooms.push(req.query.room);
-      doc.save();
-    }
-  });
+  );
 });
 
 app.get("/api/v1.0/partRoom", function(req, res) {});
 app.get("/api/v1.0/listUsers", function(req, res) {});
-app.get("/api/v1.0/listUsers", function(req, res) {});
+app.get("/api/v1.0/registerUser", function(req, res) {});
 
 
 app.listen(8080);
