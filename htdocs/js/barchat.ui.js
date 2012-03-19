@@ -27,6 +27,7 @@ BarchatUI.msgRoom = function(msgdatas) {
 				stage.append(ich.message(msgdata));
 			}
 		}
+		window.scrollBy(0, 999999999999);
 	})
 }
 // @todo still an issue with messages having the same millisecond timestamp?
@@ -76,7 +77,7 @@ BarchatUI.doLogin = function(register){
 		$(server).bind({
 			error: function(e, errMsg){humane.error(errMsg)},
 			connected: function(e, connMsg, response){humane.info(connMsg)},
-			message: function(e, messages){BarchatUI.msgRoom(messages);window.scrollBy(0, 100000000000000000);$("#statusbar").focus();},
+			message: function(e, messages){BarchatUI.msgRoom(messages);},
 			join: function(e, server, room){BarchatUI.addRoom(server, room._id, room.title);BarchatUI.setActiveRoom(server, room._id);},
 			presence: function(e, users){BarchatUI.showUsers(users);}
 		});
