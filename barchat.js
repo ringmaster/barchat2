@@ -195,9 +195,14 @@ app.get("/api/v1.0/getMessages", function(req, res) {
     function(user){
       console.log(user.username, session_id, user.sessions.id(session_id).ping);
       var room_ids = _.map(user.sessions.id(session_id).rooms, function(room){return ObjectId(room)});
-      Messages.find({room: {$in: room_ids}, timestamp: {$gt: parseInt(req.query.timestamp)}}, function(err, docs){
-        res.json(docs);
-      });
+      Messages
+        .where('room').in(room_ids)
+        .where('timestamp').gt(parseInt(req.query.timestamp))
+        .limit(20)
+        .asc('timestamp')
+        .run(function(err, docs) {
+          res.json(docs);
+        });
     },
     function(error){
       res.json(error);
