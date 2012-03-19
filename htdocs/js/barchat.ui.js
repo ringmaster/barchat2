@@ -76,7 +76,7 @@ BarchatUI.doLogin = function(register){
 		$(server).bind({
 			error: function(e, errMsg){humane.error(errMsg)},
 			connected: function(e, connMsg, response){humane.info(connMsg)},
-			message: function(e, messages){BarchatUI.msgRoom(messages);},
+			message: function(e, messages){BarchatUI.msgRoom(messages);window.scrollBy(0, 100000000000000000);$("#statusbar").focus();},
 			join: function(e, server, room){BarchatUI.addRoom(server, room._id, room.title);BarchatUI.setActiveRoom(server, room._id);},
 			presence: function(e, users){BarchatUI.showUsers(users);}
 		});
