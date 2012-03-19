@@ -1,7 +1,7 @@
 var BarchatUI = new Object();
 BarchatUI.addRoom = function(server, room_id, room_name) {
 	$('#roomtabs').append(ich.room_tab({room_id: room_id, room_name: room_name, server: server}));
-	$('#rooms').append(ich.room_contents({room_id: room_id, room_name: room_name, server: server}));
+	$('#rooms_clear').before(ich.room_contents({room_id: room_id, room_name: room_name, server: server}));
 };
 BarchatUI.removeRoom = function(room_id) {
 	$('.roomtab[data-room="' + room_id + '"]').remove();
@@ -27,8 +27,10 @@ BarchatUI.msgRoom = function(msgdatas) {
 				stage.append(ich.message(msgdata));
 			}
 		}
-		window.scrollBy(0, 999999999999);
 	})
+	if(msgdatas.length > 0) {
+		BarchatUI.scrollToBottom();
+	}
 }
 // @todo still an issue with messages having the same millisecond timestamp?
 BarchatUI.getInsertionPoint = function(stage, d) {
@@ -51,10 +53,16 @@ BarchatUI.getInsertionPoint = function(stage, d) {
 		if(cmsg.data('timestamp') == d ) {
 			older = center + 1;
 		}
-		console.log(older, newer);
 	}
 
 	return $(msgs[newer]);
+}
+
+BarchatUI.scrollToBottom = function() {
+	activeRoom = BarchatUI.getActiveRoom();
+	// _.reduce($('.room'), function(m, n) { return Math.max(m, $(n).height()); } , 0);
+	bottom = $('#room_' + activeRoom.room).height();
+	$('#rooms').css('bottom', $('#controls').height()+5).animate({ scrollTop: bottom }, "easeOutQuint");
 }
 
 BarchatUI.getActiveRoom = function() {
@@ -117,6 +125,7 @@ $(function(){
 				$('#textinput').html('');
 				break;
 		}
+		BarchatUI.scrollToBottom();
 	});
 
 });

@@ -73,7 +73,6 @@ Barchat.Server.prototype.getMessages = function() {
 				}
 			}, server.latest);
 		}
-		console.log(data);
 	}, 'jsonp');
 }
 

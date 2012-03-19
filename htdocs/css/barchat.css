@@ -56,8 +56,17 @@ header h1 {
 	opacity: 0.4;
 }
 #rooms {
-	padding-bottom: 80px;
-	margin: 66px 0px 120px 80px;
+	padding: 0px;
+	margin: 0px;
+	position: absolute;
+	top: 66px;
+	left: 80px;
+	right: 0px;
+	bottom: 60px;
+	overflow-y: auto;
+}
+#rooms_clear {
+	clear: both;
 }
 #controls {
 	position: fixed;
@@ -94,7 +103,7 @@ header h1 {
 }
 
 #loginform {
-	margin: 80px 20px;
+	margin: 20px 20px;
 }
 #loginform #server {
 	width: 220px;
@@ -184,6 +193,7 @@ header h1 {
 	background-color: white;
 	float: left;
 	max-height: 200px;
+	min-height: 1em;
 }
 
 
