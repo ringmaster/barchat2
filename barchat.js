@@ -199,8 +199,9 @@ app.get("/api/v1.0/getMessages", function(req, res) {
         .where('room').in(room_ids)
         .where('timestamp').gt(parseInt(req.query.timestamp))
         .limit(20)
-        .asc('timestamp')
+        .desc('timestamp')
         .run(function(err, docs) {
+          docs = docs.reverse();
           res.json(docs);
         });
     },
