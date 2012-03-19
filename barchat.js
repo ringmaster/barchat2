@@ -57,6 +57,7 @@ var UsersSchema = new Schema({
   password: String,
   nickname: String,
   avatar: String,
+  email: String,
   sessions: [SessionsSchema]
 });
 
@@ -133,6 +134,9 @@ app.post("/api/v1.0/getUserToken", function(req, res) {
 });
 
 app.post("/api/v1.0/registerUser", function(req, res) {
+  if(req.body.username == '' || req.body.password == '' || req.body.email == '') {
+    res.json({err: 1, errMsg: 'All fields are required'});
+  }
   Users.findOne({username: req.body.username}, function(err, doc){
     if(doc != null) {
       res.json({err: 1, errMsg: 'Username already exists'});
@@ -142,6 +146,7 @@ app.post("/api/v1.0/registerUser", function(req, res) {
       user.username = req.body.username;
       user.nickname = req.body.username;
       user.password = crypto.createHash('md5').update(req.body.password).digest("hex");
+      user.email = req.body.email;
       session = new Sessions();
       session.ping = new Date();
       // @todo DRY!
