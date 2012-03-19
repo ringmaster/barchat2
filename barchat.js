@@ -4,6 +4,7 @@ var express = require('express')
   , Schema = mongoose.Schema
   , crypto = require('crypto')
   , _ = require("underscore")
+  , moment = require('moment')
   , ObjectId = require('mongoose').Types.ObjectId;
 
 var app = module.exports = express.createServer();
@@ -89,8 +90,18 @@ var userFromToken = function(token, success, failure) {
       success(doc);
     }
   });
-
 }
+
+var cleanSessions = function() {
+  console.log('Session cleanup');
+  var options = { multi: true, safe: false };
+  var dt = moment().subtract('m', 1);
+  Users.update({}, {$pull: {'sessions': {'ping': {$lt: new Date(dt)}}}}, options, function(err, doc) {
+    console.log(err);
+  });
+}
+setInterval(cleanSessions, 60000);
+cleanSessions();
 
 // Routes
 
@@ -111,8 +122,36 @@ app.post("/api/v1.0/getUserToken", function(req, res) {
         doc.sessions.push(session)
         doc.save();
         res.cookie('session', session._id);
-        res.json({'uid': doc._id, 'nickname': doc.nickname, 'token': session._id, 'session': session});
+        if(!doc.nickname) {
+          doc.nickname = doc.username;
+        }
+        cleanSessions();
+        res.json({'uid': doc._id, 'username': doc.username, 'nickname': doc.nickname, 'token': session._id, 'session': session});
       })
+    }
+  });
+});
+
+app.post("/api/v1.0/registerUser", function(req, res) {
+  Users.findOne({username: req.body.username}, function(err, doc){
+    if(doc != null) {
+      res.json({err: 1, errMsg: 'Username already exists'});
+    }
+    else {
+      user = new Users();
+      user.username = req.body.username;
+      user.nickname = req.body.username;
+      user.password = crypto.createHash('md5').update(req.body.password).digest("hex");
+      session = new Sessions();
+      session.ping = new Date();
+      // @todo DRY!
+      Rooms.find({'properties.default': 1}, function(err, rooms){
+        session.rooms = _.map(rooms, function(room){return room._id;});
+        user.sessions.push(session)
+        user.save();
+        res.cookie('session', session._id);
+        res.json({'uid': user._id, 'username': user.username, 'nickname': user.nickname, 'token': session._id, 'session': session});
+      });
     }
   });
 });
@@ -184,11 +223,8 @@ app.post("/api/v1.0/sendMessage", function(req, res) {
   userFromToken(
     session_id, 
     function(user){
-      console.log(user.username, user, session_id, user.sessions.id(session_id).ping, 'sendMessage', req.body.room);
+      console.log(user.username, session_id, user.sessions.id(session_id).ping, 'sendMessage', req.body.room);
       message = new Messages();
-
-console.log(user.avatar, typeof(user.avatar));
-
       message.user = {'username': user.username, 'avatar': user.avatar, 'user_id': user._id};
       message.raw = req.body.raw,
       message.msg = req.body.raw;
@@ -206,7 +242,26 @@ console.log(user.avatar, typeof(user.avatar));
 });
 
 app.get("/api/v1.0/partRoom", function(req, res) {});
-app.get("/api/v1.0/listUsers", function(req, res) {});
+app.get("/api/v1.0/getPresence", function(req, res) {
+  var session_id = req.cookies.session;
+  userFromToken(
+    session_id, 
+    function(user){
+      console.log(user.username, session_id, user.sessions.id(session_id).ping, 'getPresence', req.query.room);
+      Users.find({'sessions.rooms': req.query.room}, function(err, docs){
+        docs = _.map(docs, function(doc){
+          doc.password = null;
+          return doc;
+        })
+        // @todo This data needs to be stored in aggregate in the database, and compared to send part/join messages
+        res.json(docs);
+      })
+    },
+    function(error){
+      res.json(error);
+    }
+  );
+});
 app.get("/api/v1.0/registerUser", function(req, res) {});
 
 

@@ -19,7 +19,12 @@
 		{{#placards}}
 			<li class="user_placard">
 				<span class="status"></span>
+				{{#avatar}}
 				<img class="avatar" src="{{avatar}}" title="{{nickname}}">
+				{{/avatar}}
+				{{^avatar}}
+				<img class="avatar" src="http://unicornify.appspot.com/avatar/{{_id}}?s=45" title="{{nickname}}">
+				{{/avatar}}
 			</li>
 		{{/placards}}
 		<ul>
@@ -39,7 +44,12 @@
 <div class="message" data-user="{{user.user_id}}">
 {{#user.username}}
 <div class="who">
+{{#user.avatar}}
 <img src="{{user.avatar}}" class="avatar">
+{{/user.avatar}}
+				{{^user.avatar}}
+				<img class="avatar" src="http://unicornify.appspot.com/avatar/{{user.user_id}}?s=64" title="{{nickname}}">
+				{{/user.avatar}}
 <span class="username">{{user.username}}</span>
 </div>
 {{/user.username}}
@@ -60,14 +70,20 @@
 	<div id="stage">
 		<div id="rooms">
 			<div id="connect" class="room active" data-room="connect">
-				<form id="loginform" action="/api/v1.0" method="POST">
-					<table>
-						<tr><td><label for="server">Server:</label></td><td><select name="server" id="server">
-							<option value="http://{{$host}}/api/v1.0">Lise</option>
-						</select></td></tr>
-						<tr><td><label for="username">Username:</label></td><td><input type="text" id="username" name="username"></td></tr>
-						<tr><td><label for="password">Password:</label></td><td><input type="password" id="password" name="password"></td></tr>
-						<tr><td></td><td><input type="submit" value="Log In"></td></tr>
+				<form id="loginform" action="" method="POST">
+						<p>
+							<select name="server" id="server">
+								<option value="http://{{$host}}/api/v1.0">{{$host}}</option>
+							</select><label for="server">Server</label>
+						<p>
+							<input type="text" id="username" name="username">
+							<label for="username">Username</label>
+						<p>
+							<input type="password" id="password" name="password">
+							<label for="password">Password</label>
+						<p>
+							<input type="submit" id="login" name="login" value="Log In">
+							<input type="submit" id="register" name="register" value="Register">
 					</table>
 				</form>
 			</div>

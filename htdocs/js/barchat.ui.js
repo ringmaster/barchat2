@@ -8,26 +8,26 @@ BarchatUI.removeRoom = function(room_id) {
 	$('.room[data-room="' + room_id + '"]').remove();
 }
 BarchatUI.msgRoom = function(msgdatas) {
-	for(var i in msgdatas) {
-		stage = $('.room[data-room="' + msgdatas[i].room + '"]');
-		msgdate = new Date(msgdatas[i].timestamp);
-		msgdatas[i].msgdate = msgdate.toString('ddd h:mmtt');
+	_.each(msgdatas, function(msgdata){
+		stage = $('.room[data-room="' + msgdata.room + '"]');
+		msgdate = new Date(msgdata.timestamp);
+		msgdata.msgdate = msgdate.toString('ddd h:mmtt');
 
 		var ip = BarchatUI.getInsertionPoint(stage, msgdate.getTime());
 
 		if(ip) {
-			ip.before(ich.message(msgdatas[i]));
+			ip.before(ich.message(msgdata));
 		}
 		else {
 			lastuser = $('.message:last', stage).data('user');
-			if(lastuser == msgdatas[i].user.user_id) {
-				$('.message:last .message_texts', stage).append(ich.message_text(msgdatas[i]));
+			if(lastuser == msgdata.user.user_id) {
+				$('.message:last .message_texts', stage).append(ich.message_text(msgdata));
 			}
 			else {
-				stage.append(ich.message(msgdatas[i]));
+				stage.append(ich.message(msgdata));
 			}
 		}
-	}
+	})
 }
 // @todo still an issue with messages having the same millisecond timestamp?
 BarchatUI.getInsertionPoint = function(stage, d) {
@@ -62,18 +62,35 @@ BarchatUI.getActiveRoom = function() {
 		room: $('#roomtabs li.active').data('room')
 	};
 }
+BarchatUI.setActiveRoom = function(server_id, room_id) {
+	$('.room,#roomtabs li').removeClass('active');
+	$('.room[data-room="' + room_id + '"]').addClass('active');
+	$('#roomtabs li[data-room="' + room_id + '"]').addClass('active');
+	$('#statusbar').css('opacity', 0.4);
+	Barchat.presenceQueue(server_id, room_id);
+}
 
-function shuffle(o){ //v1.0, code based on Fisher-Yates 
-	for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
-	return o;
-};
+BarchatUI.doLogin = function(register){
+	// @todo get an actual server label
+	server = Barchat.create($('#server').val(), function(server){
+		$(server).bind({
+			error: function(e, errMsg){humane.error(errMsg)},
+			connected: function(e, connMsg, response){humane.info(connMsg)},
+			message: function(e, messages){BarchatUI.msgRoom(messages);},
+			join: function(e, server, room){BarchatUI.addRoom(server, room._id, room.title);BarchatUI.setActiveRoom(server, room._id);},
+			presence: function(e, users){BarchatUI.showUsers(users);}
+		});
+	});
+	server.connect($('#username').val(), $('#password').val(), register);
+	return false;
+}
+
+BarchatUI.showUsers = function(users) {
+	$('#statusbar').html(ich.placard_group({name: 'users_inroom', title: 'inroom', placards: users}));
+	$('#statusbar').css('opacity', 1);
+}
 
 $(function(){
-	// Initialize user sample content
-	$('#statusbar').append(ich.placard_group({name: 'users_online', title: 'online', placards: [{avatar: 'avatar.png', nickname: 'Bill Jennings'}]}));
-	$('#statusbar').append(ich.placard_group({name: 'users_services', title: 'services', placards: [{avatar: 'github.png', nickname: 'GitHub'}]}));
-	$('#statusbar').append(ich.placard_group({name: 'users_offline', title: 'offline', placards: [{avatar: 'avatar2.png', nickname: 'Sue Heron'}]}));
-
 	// textinput filtering
 	$('#textinput').bind('paste', function(e){
 		window.setTimeout(function(){
@@ -81,27 +98,12 @@ $(function(){
 		}, 0);
 	})
 
-
-	$('#loginform').submit(function(){
-		//var server = new Barchat.Server($('#server').val(), $('#username').val(), $('#password').val());
-		// @todo get an actual server label
-		server = Barchat.create($('#server').val(), function(server){
-			$(server).bind({
-				error: function(e, errMsg){humane.error(errMsg)},
-				connected: function(e, connMsg, response){humane.info(connMsg)},
-				message: function(e, messages){BarchatUI.msgRoom(messages);},
-				join: function(e, server, room){BarchatUI.addRoom(server, room._id, room.title);}
-			});
-		});
-		server.connect($('#username').val(), $('#password').val());
-		return false;
-	});
-
+	$('#login').click(function(){BarchatUI.doLogin();});
+	$('#register').click(function(){BarchatUI.doLogin(true);});
+	$('#loginform').submit(function(){return false;})
 
 	$('#roomtabs a').live('click', function(){
-		$('.room,#roomtabs li').removeClass('active');
-		$('.room[data-room="' + $(this).parents('li').data('room') + '"]').addClass('active');
-		$(this).parents('li').addClass('active');
+		BarchatUI.setActiveRoom($(this).parents('li').data('server'), $(this).parents('li').data('room'));
 		return false;
 	});
 
