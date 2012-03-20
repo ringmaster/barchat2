@@ -9,22 +9,24 @@ BarchatUI.removeRoom = function(room_id) {
 }
 BarchatUI.msgRoom = function(msgdatas) {
 	_.each(msgdatas, function(msgdata){
-		stage = $('.room[data-room="' + msgdata.room + '"]');
-		msgdate = new Date(msgdata.timestamp);
-		msgdata.msgdate = msgdate.toString('ddd h:mmtt');
+		if($('#msg_' + msgdata._id).length == 0) {
+			stage = $('.room[data-room="' + msgdata.room + '"]');
+			msgdate = new Date(msgdata.timestamp);
+			msgdata.msgdate = msgdate.toString('ddd h:mmtt');
 
-		var ip = BarchatUI.getInsertionPoint(stage, msgdate.getTime());
+			var ip = BarchatUI.getInsertionPoint(stage, msgdate.getTime());
 
-		if(ip) {
-			ip.before(ich.message(msgdata));
-		}
-		else {
-			lastuser = $('.message:last', stage).data('user');
-			if(lastuser == msgdata.user.user_id) {
-				$('.message:last .message_texts', stage).append(ich.message_text(msgdata));
+			if(ip) {
+				ip.before(ich.message(msgdata));
 			}
 			else {
-				stage.append(ich.message(msgdata));
+				lastuser = $('.message:last', stage).data('user');
+				if(lastuser == msgdata.user.user_id) {
+					$('.message:last .message_texts', stage).append(ich.message_text(msgdata));
+				}
+				else {
+					stage.append(ich.message(msgdata));
+				}
 			}
 		}
 	})

@@ -98,7 +98,7 @@ var cleanSessions = function() {
   var options = { multi: true, safe: false };
   var dt = moment().subtract('m', 1);
   Users.update({}, {$pull: {'sessions': {'ping': {$lt: new Date(dt)}}}}, options, function(err, doc) {
-    console.log(err);
+    // Do something useful here.
   });
 }
 setInterval(cleanSessions, 60000);
