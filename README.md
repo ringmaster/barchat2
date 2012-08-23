@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/ringmaster/barchat2.png)](http://travis-ci.org/ringmaster/barchat2)
 BarChat2 - A realtime web-based chat system based on node.js
 ============================================================
 
